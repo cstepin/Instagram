@@ -14,8 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.SaveCallback;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.parceler.Parcels;
 
 import java.util.List;
@@ -39,7 +43,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Post post = posts.get(position);
-        holder.bind(post);
+        try {
+            holder.bind(post);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -53,6 +61,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         ImageView ivImage;
         ImageView ivLikeButton;
         View itemView;
+        TextView tvNumLikes;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -60,29 +69,32 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             tvUsername = itemView.findViewById(R.id.tvUsername);
             ivImage = itemView.findViewById(R.id.ivImage);
             ivLikeButton = itemView.findViewById(R.id.ivLikeButton);
-            final Boolean[] isLiked = {false};
-            Glide.with(context).load(R.drawable.ufi_heart).into(ivLikeButton);
             tvDescription = itemView.findViewById(R.id.tvDescription);
-
-            ivLikeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(!isLiked[0]) {
-                        Glide.with(context).load(R.drawable.ufi_heart_active).into(ivLikeButton);
-                        isLiked[0] = !isLiked[0];
-                    }
-                    else{
-                        Glide.with(context).load(R.drawable.ufi_heart).into(ivLikeButton);
-                        isLiked[0] = !isLiked[0];
-                    }
-                }
-            });
+            tvNumLikes = itemView.findViewById(R.id.tvNumLikes);
         }
 
-        public void bind(Post post) {
+        public void bind(Post post) throws JSONException {
             tvDescription.setText(post.getDescription());
             tvUsername.setText(post.getUser().getUsername());
             ParseFile image = post.getImage();
+
+            //Need to check if the user is in the list of liked by the post
+            JSONArray likeArray2 = post.getJSONArray("likes");
+            Log.i("tagtag", String.valueOf(likeArray2.length()));
+            if(likeArray2 == null){
+                tvNumLikes.setText(0);
+            }
+            else {
+                tvNumLikes.setText(String.valueOf(likeArray2.length()));
+            }
+          //  Log.i("objectId", post.getUser().getObjectId() + " and array: " + likeArray2.toString());
+            if(jsonHasString(likeArray2, post.getUser().getObjectId().toString()) == -1) {
+                Glide.with(context).load(R.drawable.ufi_heart).into(ivLikeButton);
+            }
+            else{
+                Glide.with(context).load(R.drawable.ufi_heart_active).into(ivLikeButton);
+            }
+
             if (image != null) {
                 Glide.with(context).load(image.getUrl()).into(ivImage);
             }
@@ -94,6 +106,17 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     intent.putExtra(Post.class.getSimpleName(), Parcels.wrap(post));
                     // show the activity
                     context.startActivity(intent);
+                }
+            });
+
+            ivLikeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        clickLike(post);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }
@@ -115,6 +138,48 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 // show the activity
                 context.startActivity(intent);
             }
+        }
+
+        public void clickLike(Post post) throws JSONException {
+            JSONArray likeArray = post.getJSONArray("likes");
+            int position = jsonHasString(likeArray, post.getUser().getObjectId());
+           // Log.i("Postsadapter likeArray", likeArray.toString());
+            // First examine the case where the image has not been liked
+            if(position == -1){
+                //Need to add the thing to the list
+                likeArray.put(post.getUser().getObjectId());
+            //    Log.i("Postsadapter likeArray2", likeArray.toString());
+                Glide.with(context).load(R.drawable.ufi_heart_active).into(ivLikeButton);
+            }
+            //Else, we can find the user in the list of liked people, so we unlike the post
+            else{
+              //  Log.i("Postsadapter likeArray2", "in dislike");
+                likeArray.remove(position);
+                Glide.with(context).load(R.drawable.ufi_heart).into(ivLikeButton);
+            }
+            tvNumLikes.setText(String.valueOf(likeArray.length()));
+            post.put("likes", likeArray);
+            post.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if(e != null){
+                        Log.e("postsadapter", "error saving likes", e);
+                        return;
+                    }
+                    else{
+                        Log.i("postsadapter", "liked successfully");
+                    }
+                }
+            });
+        }
+
+        private int jsonHasString(JSONArray likeArray, String objectId) throws JSONException {
+            for(int i = 0; i < likeArray.length(); i++){
+                if(likeArray.get(i).toString().equals(objectId)){
+                    return i;
+                }
+            }
+            return -1;
         }
     }
 

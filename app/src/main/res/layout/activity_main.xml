@@ -69,4 +69,12 @@
         app:layout_constraintTop_toBottomOf="@+id/btnSubmit"
         app:layout_constraintVertical_bias="0.956"
         app:srcCompat="?attr/actionModeSelectAllDrawable" />
+
+    <ProgressBar
+        android:id="@+id/pbLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnSubmit;
     Button btnCaptureImage;
     ImageView ivPostImage;
+    ProgressBar pb;
     final String TAG = "MainActivity";
 
     @Override
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         ivPostImage = findViewById(R.id.ivPostImage);
         ibLogout = findViewById(R.id.ibLogout);
         ibViewFeed = findViewById(R.id.ibViewFeed);
+        pb = (ProgressBar) findViewById(R.id.pbLoading);
 
         ibViewFeed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,8 +92,10 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 ParseUser currentUser = ParseUser.getCurrentUser();
-                savePost(description, currentUser, photoFile);
 
+                pb.setVisibility(ProgressBar.VISIBLE);
+                savePost(description, currentUser, photoFile);
+                // run a background job and once complete
             }
         });
     }
@@ -173,11 +178,12 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "post saved successfully");
                 etDescription.setText("");
                 ivPostImage.setImageResource(0);
+
+                pb.setVisibility(ProgressBar.INVISIBLE);
             }
         });
 
     }
-
 
     private void queryPosts(){
             ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
