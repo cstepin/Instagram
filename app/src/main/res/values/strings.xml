@@ -2,4 +2,7 @@
     <string name="app_name">InstaClone</string>
     <string name="password">Password</string>
     <string name="username">Username</string>
+    <string name="user_s_image">User\'s image</string>
+    <string name="username2">Username</string>
+    <string name="password2">Password</string>
 </resources>

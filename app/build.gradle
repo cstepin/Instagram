@@ -37,4 +37,14 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation "com.github.parse-community.Parse-SDK-Android:parse:3.0.1"
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+
+    // Glide for remote image loading
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+
+    //Dependency to have swipe-refresh ability
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    implementation 'org.parceler:parceler-api:1.1.12'
+    annotationProcessor 'org.parceler:parceler:1.1.12'
 }
