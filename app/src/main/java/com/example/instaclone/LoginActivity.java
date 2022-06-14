@@ -8,8 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -20,6 +22,7 @@ public class LoginActivity extends AppCompatActivity {
     public EditText etPassword;
     public EditText etUsername;
     public Button btnLogin;
+    public ImageView ivInstaImage;
 
 
     @Override
@@ -34,6 +37,9 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         etUsername = findViewById(R.id.etUsername);
         btnLogin = findViewById(R.id.btnLogin);
+        ivInstaImage = findViewById(R.id.ivInstaImage);
+
+        Glide.with(this).load(R.drawable.icon).into(ivInstaImage);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
