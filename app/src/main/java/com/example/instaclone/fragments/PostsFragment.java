@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -29,7 +30,7 @@ public class PostsFragment extends Fragment {
     protected PostsAdapter adapter;
 
     RecyclerView rvPosts;
-    ArrayList<Post> allPosts;
+    protected ArrayList<Post> allPosts;
     final String TAG = "FeedActivity";
     SwipeRefreshLayout swipeContainer;
     //... client;
@@ -57,7 +58,7 @@ public class PostsFragment extends Fragment {
         // set the adapter on the recycler view
         rvPosts.setAdapter(adapter);
         // set the layout manager on the recycler view
-        rvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvPosts.setLayoutManager(new GridLayoutManager(getContext(), 2));
         // query posts from Parstagram
         queryPosts();
 
@@ -84,7 +85,7 @@ public class PostsFragment extends Fragment {
                 android.R.color.holo_red_light);
     }
 
-    private void queryPosts() {
+     public void queryPosts() {
         // specify what type of data we want to query - Post.class
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         // include data referred by user key
