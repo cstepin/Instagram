@@ -62,14 +62,16 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "failure logging in", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
                 goMainActivity();
+
+                Log.i(TAG, "main 2");
                 Toast.makeText(LoginActivity.this, "success logging in", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void goMainActivity() {
+        Log.i(TAG, "main activity");
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
         finish();

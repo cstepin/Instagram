@@ -14,28 +14,6 @@
         android:layout_above="@+id/bottomNavigation"
         />
 
-
-    <ImageButton
-        android:id="@+id/ibLogout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="332dp"
-        android:layout_marginTop="588dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
-
-    <ImageButton
-        android:id="@+id/ibViewFeed"
-        android:layout_width="58dp"
-        android:layout_height="51dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="160dp"
-        app:layout_constraintBottom_toTopOf="@+id/ibLogout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="?attr/actionModeSelectAllDrawable" />
-
     <ProgressBar
         android:id="@+id/pbLoading"
         android:layout_width="wrap_content"

@@ -25,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.instaclone.fragments.ComposeFragment;
+import com.example.instaclone.fragments.PostsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -38,8 +39,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageButton ibLogout;
-    ImageButton ibViewFeed;
     BottomNavigationView bottomNavigationView;
     final String TAG = "MainActivity";
 
@@ -52,22 +51,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         bottomNavigationView = findViewById(R.id.bottomNavigation);
-        ibLogout = findViewById(R.id.ibLogout);
-        ibViewFeed = findViewById(R.id.ibViewFeed);
-
-        ibViewFeed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toViewFeed();
-            }
-        });
-
-        ibLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onLogout();
-            }
-        });
 
         bottomNavigationView.setOnItemSelectedListener(
                 new BottomNavigationView.OnItemSelectedListener() {
@@ -77,16 +60,18 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.action_profile:
                         fragment = new ComposeFragment();
-                        Toast.makeText(MainActivity.this, "Profile!", Toast.LENGTH_SHORT).show();
+                     //   Toast.makeText(MainActivity.this, "Profile!", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.action_compose:
                         fragment = new ComposeFragment();
-                        Toast.makeText(MainActivity.this, "Compose!", Toast.LENGTH_SHORT).show();
+                     //   Toast.makeText(MainActivity.this, "Compose!", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.action_home:
-                        fragment = new ComposeFragment();
-                        Toast.makeText(MainActivity.this, "Home!", Toast.LENGTH_SHORT).show();
+                        fragment = new PostsFragment();
+                    //    Toast.makeText(MainActivity.this, "Home!", Toast.LENGTH_SHORT).show();
                         break;
+                    case R.id.action_logout:
+                        onLogout();
                     default: return true;
                 }
                 fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
@@ -102,7 +87,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onLogout() {
+        Toast.makeText(MainActivity.this, "logging out", Toast.LENGTH_LONG).show();
+      //  InstaClone.getRestClient(this).clearAccessToken();
+        // navigate backwards to Login screen
+        Intent i = new Intent(this, LoginActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // this makes sure the Back button won't work
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // same as above
         ParseUser.logOutInBackground();
         ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
+        startActivity(i);
+        finish();
     }
 }

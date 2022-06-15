@@ -29,6 +29,7 @@ public class FeedActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("feed", "in feed activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
 
