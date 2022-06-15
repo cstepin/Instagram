@@ -36,4 +36,10 @@
         app:srcCompat="@drawable/ufi_heart"
         app:tint="#B12121" />
 
+    <TextView
+        android:id="@+id/tvNumLikes"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        tools:text="40" />
+
 </LinearLayout>
