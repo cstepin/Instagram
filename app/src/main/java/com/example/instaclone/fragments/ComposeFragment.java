@@ -37,6 +37,7 @@ import com.parse.SaveCallback;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 public class ComposeFragment extends Fragment {
 
@@ -68,7 +69,7 @@ public class ComposeFragment extends Fragment {
 
 
         // Load the taken image into a preview
-        ivPreview = (ImageView) view.findViewById(R.id.ivPostImage);
+        ivPreview = view.findViewById(R.id.ivPostImage);
 
         etDescription = view.findViewById(R.id.etDescription);
         btnSubmit = view.findViewById(R.id.btnSubmit);
@@ -113,7 +114,7 @@ public class ComposeFragment extends Fragment {
         // wrap File object into a content provider
         // required for API >= 24
         // See https://guides.codepath.com/android/Sharing-Content-with-Intents#sharing-files-with-api-24-or-higher
-        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.codepath.fileprovider", photoFile);
+        Uri fileProvider = FileProvider.getUriForFile(requireContext(), "com.codepath.fileprovider", photoFile);
 
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
@@ -147,7 +148,7 @@ public class ComposeFragment extends Fragment {
         // Get safe storage directory for photos
         // Use `getExternalFilesDir` on Context to access package-specific directories.
         // This way, we don't need to request external read/write runtime permissions.
-        File mediaStorageDir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
+        File mediaStorageDir = new File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
 
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
@@ -180,6 +181,7 @@ public class ComposeFragment extends Fragment {
         });
     }
 
+    /*
     private void queryPosts(){
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
@@ -195,4 +197,5 @@ public class ComposeFragment extends Fragment {
             }
         });
     }
+     */
 }

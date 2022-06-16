@@ -22,8 +22,8 @@ public class LoginActivity extends AppCompatActivity {
     public EditText etPassword;
     public EditText etUsername;
     public Button btnLogin;
+    public Button btnSignUp;
     public ImageView ivInstaImage;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         etUsername = findViewById(R.id.etUsername);
         btnLogin = findViewById(R.id.btnLogin);
+        btnSignUp = findViewById(R.id.btnSignUp);
         ivInstaImage = findViewById(R.id.ivInstaImage);
 
         Glide.with(this).load(R.drawable.icon).into(ivInstaImage);
@@ -50,6 +51,18 @@ public class LoginActivity extends AppCompatActivity {
                 loginUser(username, password);
             }
         });
+
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toSignUpActivity();
+            }
+        });
+    }
+
+    private void toSignUpActivity() {
+        Intent i = new Intent(this, SignUpActivity.class);
+        startActivity(i);
     }
 
     private void loginUser(String username, String password) {

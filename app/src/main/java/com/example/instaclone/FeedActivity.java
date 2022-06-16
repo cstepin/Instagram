@@ -11,6 +11,7 @@ import android.util.Log;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 
@@ -36,7 +37,11 @@ public class FeedActivity extends AppCompatActivity {
         rvPosts = findViewById(R.id.rvPosts);
         // initialize the array that will hold posts and create a PostsAdapter
         allPosts = new ArrayList<>();
-        adapter = new PostsAdapter(this, allPosts);
+        adapter = new PostsAdapter(this, allPosts, new PostsAdapter.clickDetails() {
+            @Override
+            public void onClickReplyReaction(ParseUser parseUser) {
+            }
+        });
 
         // set the adapter on the recycler view
         rvPosts.setAdapter(adapter);
@@ -45,7 +50,7 @@ public class FeedActivity extends AppCompatActivity {
         // query posts from Parstagram
         queryPosts();
 
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        swipeContainer = findViewById(R.id.swipeContainer);
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
