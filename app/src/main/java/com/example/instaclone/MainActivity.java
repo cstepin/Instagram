@@ -45,11 +45,27 @@ public class MainActivity extends AppCompatActivity {
 
     final FragmentManager fragmentManager = getSupportFragmentManager();
 
+    // adapter
+    private static MainActivity.clickDetails cR;
+
+//For each row, need to inflate the layout
+
+    public interface clickDetails
+    {
+        void onClickReplyReaction(ParseUser parseUser);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        cR = new clickDetails() {
+            @Override
+            public void onClickReplyReaction(ParseUser parseUser) {
+
+            }
+        };
 
         bottomNavigationView = findViewById(R.id.bottomNavigation);
 
@@ -60,14 +76,18 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragment;
                 switch (menuItem.getItemId()) {
                     case R.id.action_profile:
-                        fragment = new ProfileFragment();
+                        Log.i("in here 3", ParseUser.getCurrentUser().toString());
+                        MainActivity.cR.onClickReplyReaction(ParseUser.getCurrentUser());
+                        fragment = ProfileFragment.newInstance(ParseUser.getCurrentUser());
                      //   Toast.makeText(MainActivity.this, "Profile!", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.action_compose:
+                        Log.i("in here 4", ParseUser.getCurrentUser().toString());
                         fragment = new ComposeFragment();
                      //   Toast.makeText(MainActivity.this, "Compose!", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.action_home:
+                        Log.i("in here 5", ParseUser.getCurrentUser().toString());
                         fragment = new PostsFragment();
                     //    Toast.makeText(MainActivity.this, "Home!", Toast.LENGTH_SHORT).show();
                         break;
@@ -94,9 +114,9 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(this, LoginActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // this makes sure the Back button won't work
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // same as above
+        startActivity(i);
         ParseUser.logOutInBackground();
         ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
-        startActivity(i);
         finish();
     }
 }

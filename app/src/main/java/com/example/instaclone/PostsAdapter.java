@@ -11,11 +11,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.instaclone.fragments.ProfileFragment;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import org.json.JSONArray;
@@ -28,9 +34,20 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     private Context context;
     private List<Post> posts;
 
-    public PostsAdapter(Context context, List<Post> posts) {
+    // adapter
+    private static clickDetails cR;
+
+//For each row, need to inflate the layout
+
+    public interface clickDetails
+    {
+        void onClickReplyReaction(ParseUser parseUser);
+    }
+
+    public PostsAdapter(Context context, List<Post> posts, clickDetails cR) {
         this.context = context;
         this.posts = posts;
+        this.cR = cR;
     }
 
     @NonNull
@@ -80,15 +97,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
             //Need to check if the user is in the list of liked by the post
             JSONArray likeArray2 = post.getJSONArray("likes");
+            assert likeArray2 != null;
             Log.i("tagtag", String.valueOf(likeArray2.length()));
-            if(likeArray2 == null){
-                tvNumLikes.setText(0);
+            tvNumLikes.setText(String.valueOf(likeArray2.length()));
+            if(ParseUser.getCurrentUser() == null){
+                return;
             }
-            else {
-                tvNumLikes.setText(String.valueOf(likeArray2.length()));
-            }
-          //  Log.i("objectId", post.getUser().getObjectId() + " and array: " + likeArray2.toString());
-            if(jsonHasString(likeArray2, post.getUser().getObjectId().toString()) == -1) {
+         //   Log.i("objectId", ParseUser.getCurrentUser().getObjectId().toString() + " and array: " + likeArray2.toString());
+            if(jsonHasString(likeArray2, ParseUser.getCurrentUser().getObjectId()) == -1) {
                 Glide.with(context).load(R.drawable.ufi_heart).into(ivLikeButton);
             }
             else{
@@ -98,6 +114,19 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             if (image != null) {
                 Glide.with(context).load(image.getUrl()).into(ivImage);
             }
+
+            tvUsername.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i("postsadapter", "in username on click");
+                    onProfileClick(post);
+                    AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                    Fragment newFragment = ProfileFragment.newInstance(post.getUser());
+                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, newFragment).addToBackStack(null).commit();
+                    PostsAdapter.cR.onClickReplyReaction(post.getUser());
+                }
+            });
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -123,7 +152,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
         @Override
         public void onClick(View v) {
-            Log.i("postsadapter", "in onclick");
             int position = getAdapterPosition();
             // make sure the position is valid, i.e. actually exists in the view
             if (position != RecyclerView.NO_POSITION) {
@@ -142,18 +170,19 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
         public void clickLike(Post post) throws JSONException {
             JSONArray likeArray = post.getJSONArray("likes");
-            int position = jsonHasString(likeArray, post.getUser().getObjectId());
-           // Log.i("Postsadapter likeArray", likeArray.toString());
+            assert likeArray != null;
+            int position = jsonHasString(likeArray, ParseUser.getCurrentUser().getObjectId());
+       //     Log.i("Postsadapter likeArray", likeArray.toString());
             // First examine the case where the image has not been liked
             if(position == -1){
                 //Need to add the thing to the list
                 likeArray.put(post.getUser().getObjectId());
-            //    Log.i("Postsadapter likeArray2", likeArray.toString());
+        //        Log.i("Postsadapter likeArray2", likeArray.toString());
                 Glide.with(context).load(R.drawable.ufi_heart_active).into(ivLikeButton);
             }
             //Else, we can find the user in the list of liked people, so we unlike the post
             else{
-              //  Log.i("Postsadapter likeArray2", "in dislike");
+         //       Log.i("Postsadapter likeArray2", "in dislike");
                 likeArray.remove(position);
                 Glide.with(context).load(R.drawable.ufi_heart).into(ivLikeButton);
             }
@@ -164,7 +193,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 public void done(ParseException e) {
                     if(e != null){
                         Log.e("postsadapter", "error saving likes", e);
-                        return;
                     }
                     else{
                         Log.i("postsadapter", "liked successfully");
@@ -181,6 +209,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             }
             return -1;
         }
+    }
+
+    private void onProfileClick(Post post) {
     }
 
     // Clean all elements of the recycler

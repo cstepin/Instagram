@@ -22,8 +22,8 @@ public class LoginActivity extends AppCompatActivity {
     public EditText etPassword;
     public EditText etUsername;
     public Button btnLogin;
+    public Button btnSignUp;
     public ImageView ivInstaImage;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,36 +37,38 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         etUsername = findViewById(R.id.etUsername);
         btnLogin = findViewById(R.id.btnLogin);
+        btnSignUp = findViewById(R.id.btnSignUp);
         ivInstaImage = findViewById(R.id.ivInstaImage);
 
-        Glide.with(this).load(R.drawable.icon).into(ivInstaImage);
+        Glide.with(this).load(R.drawable.nav_logo_whiteout).into(ivInstaImage);
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG, "onClick login button");
-                String username = etUsername.getText().toString();
-                String password = etPassword.getText().toString();
-                loginUser(username, password);
-            }
+        btnLogin.setOnClickListener(v -> {
+            Log.i(TAG, "onClick login button");
+            String username = etUsername.getText().toString();
+            String password = etPassword.getText().toString();
+            loginUser(username, password);
         });
+
+        btnSignUp.setOnClickListener(v -> toSignUpActivity());
+    }
+
+    private void toSignUpActivity() {
+        Intent i = new Intent(this, SignUpActivity.class);
+        startActivity(i);
     }
 
     private void loginUser(String username, String password) {
         Log.i(TAG, "Attempting to login user " + username);
-        ParseUser.logInInBackground(username, password, new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException e) {
-                if(e != null){
-                    Log.e(TAG, "error in login", e);
-                    Toast.makeText(LoginActivity.this, "failure logging in", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                goMainActivity();
-
-                Log.i(TAG, "main 2");
-                Toast.makeText(LoginActivity.this, "success logging in", Toast.LENGTH_SHORT).show();
+        ParseUser.logInInBackground(username, password, (user, e) -> {
+            if(e != null){
+                Log.e(TAG, "error in login", e);
+                Toast.makeText(LoginActivity.this, "failure logging in", Toast.LENGTH_SHORT).show();
+                return;
             }
+            goMainActivity();
+
+            Log.i(TAG, "main 2");
+            Toast.makeText(LoginActivity.this, "success logging in", Toast.LENGTH_SHORT).show();
         });
     }
 
